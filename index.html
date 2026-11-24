@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#ffedf5" />
+  <title>핑크 잭팟 | 금액 룰렛</title>
+  <style>
+    :root {
+      --rose: #d94f91;
+      --pink: #f486b2;
+      --light: #fff7fb;
+      --ink: #70435b;
+      --gold: #c99b48;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px 12px;
+      color: var(--ink);
+      font-family: "Pretendard", "Malgun Gothic", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 8% 10%, #fff 0, transparent 33%),
+        radial-gradient(circle at 90% 90%, #ffd9e9 0, transparent 35%),
+        #fff0f6;
+    }
+    .app { width: min(100%, 510px); text-align: center; }
+    .eyebrow { letter-spacing: .35em; color: #b8869f; font-size: 12px; font-weight: 800; }
+    h1 { margin: 8px 0; font-size: clamp(31px, 8vw, 49px); letter-spacing: -.06em;
+      color: var(--rose); text-shadow: 0 2px 0 white; }
+    .intro { margin: 0 0 25px; font-size: 14px; color: #a87a92; }
+    .cabinet {
+      padding: 16px;
+      background: linear-gradient(135deg, #ffbcd8, #f58cba 52%, #f7b9d4);
+      border: 4px solid #fff;
+      outline: 2px solid #f8ca73;
+      border-radius: 35px;
+      box-shadow: 0 18px 30px #a54f7940, inset 0 0 0 2px #ffe6a8;
+    }
+    .lights { display: flex; justify-content: space-around; gap: 5px; padding: 2px 4px 14px; }
+    .lights.bottom { padding: 14px 4px 2px; }
+    .light { width: 10px; aspect-ratio: 1; border-radius: 50%; background: #fff9d9;
+      box-shadow: 0 0 8px 2px #fff1a2; }
+    .light:nth-child(3n) { background: #f15caa; box-shadow: 0 0 8px 2px #e66eaa; }
+    .cabinet.rolling .light:nth-child(odd) { animation: twinkle .3s infinite alternate; }
+    .cabinet.rolling .light:nth-child(even) { animation: twinkle .3s .15s infinite alternate; }
+    @keyframes twinkle { to { opacity: .25; } }
+    .window { padding: 20px 10px 15px; border-radius: 25px; background: #fff9fc;
+      border: 2px solid #fff; box-shadow: inset 0 0 0 2px #f8d6e5, inset 0 6px 20px #e6b4c233; }
+    .machine-label { font-weight: 900; letter-spacing: .18em; color: var(--gold);
+      font-size: 13px; margin: 0 0 20px; }
+    .digits, .step-controls { display: flex; align-items: center; justify-content: center; gap: 4px; }
+    .reel { flex: 1; min-width: 0; height: 74px; border: 1px solid #edc9d8; border-radius: 12px;
+      overflow: hidden; background: linear-gradient(#f2dce6, #fff 24%, #fff 74%, #ecd8e2);
+      box-shadow: inset 0 3px 9px #8d5b7333, 0 3px 3px #eed0de; }
+    .number { height: 74px; display: grid; place-items: center;
+      font-size: clamp(32px, 8vw, 47px); line-height: 1; font-weight: 900; color: #6a3b55; }
+    .comma { font-size: 28px; font-weight: 900; align-self: end; color: var(--rose); }
+    .won { font-size: 19px; font-weight: 900; color: #b18a4d; }
+    .step-controls { margin-top: 12px; }
+    .step-btn { flex: 1; min-width: 0; height: 35px; border: 1px solid #f2c9d9; border-radius: 10px;
+      background: #fff; color: var(--rose); font-size: 22px; font-weight: 900; cursor: pointer; }
+    .step-btn:hover:not(:disabled) { background: #ffe8f2; }
+    button:disabled { cursor: not-allowed; opacity: .6; }
+    .comma-space { width: 13px; }
+    .won-space { width: 23px; }
+    .hint { margin: 13px 0 0; font-size: 12px; color: #ad8399; }
+    .spin { width: min(100%, 350px); margin-top: 27px; padding: 17px 16px; border: 2px solid #fff4c7;
+      border-radius: 100px; background: linear-gradient(120deg, #ffb5d1, #e86aa6 58%, #d04b8e);
+      box-shadow: 0 7px 0 #b8588b, 0 12px 22px #c9699b4d;
+      color: #fff; font-size: 19px; font-weight: 900; cursor: pointer; }
+    .spin:hover:not(:disabled) { filter: brightness(1.06); }
+    .spin:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 4px 0 #b8588b; }
+    .result { margin-top: 26px; padding: 22px 15px; border: 2px solid white;
+      border-radius: 23px; background: #ffffffd9; box-shadow: 0 8px 24px #b66e9240; }
+    .result small { font-size: 12px; font-weight: 900; letter-spacing: .16em; color: #b1859e; }
+    .result strong { display: block; margin: 9px 0; font-size: clamp(25px, 8vw, 42px); color: var(--rose); }
+    .result p { margin: 0; color: #a47b90; font-size: 13px; }
+    .result.jackpot { animation: jackpotGlow .55s alternate 5; }
+    .result.jackpot strong { color: #ba8124; }
+    @keyframes jackpotGlow { to { box-shadow: 0 0 38px #ffc461; transform: scale(1.02); } }
+    .footnote { font-size: 11px; margin: 18px 0 0; color: #af8a9c; }
+    #confetti { position: fixed; inset: 0; overflow: hidden; pointer-events: none; }
+    .piece { position: absolute; top: -25px; width: 9px; height: 14px;
+      animation: fall 3s linear forwards; }
+    @keyframes fall { to { transform: translate(var(--drift), 110vh) rotate(800deg); opacity: 0; } }
+    @media (max-width: 390px) {
+      .cabinet { padding: 10px; } .window { padding: 17px 7px 14px; }
+      .digits, .step-controls { gap: 3px; }
+      .reel, .number { height: 61px; }
+      .comma { font-size: 22px; } .won { font-size: 15px; }
+      .comma-space { width: 9px; } .won-space { width: 16px; }
+      .light { width: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="eyebrow">✦ LUCKY GACHA ✦</div>
+    <h1>PINK JACKPOT</h1>
+    <p class="intro">오늘의 행운은 얼마일까요? 💗</p>
+
+    <section class="cabinet" id="cabinet">
+      <div class="lights" id="lightsTop" aria-hidden="true"></div>
+      <div class="window">
+        <p class="machine-label">✧ DREAMY PRIZE ✧</p>
+        <div class="digits" id="digits" aria-label="현재 금액 숫자"></div>
+        <div class="step-controls" id="controls"></div>
+        <p class="hint">↻ 버튼을 누르면 해당 숫자가 한 칸씩 돌아가요!</p>
+      </div>
+      <div class="lights bottom" id="lightsBottom" aria-hidden="true"></div>
+    </section>
+
+    <button class="spin" id="spinButton" type="button">✨ 전체 랜덤 돌리기 ✨</button>
+
+    <section class="result" id="result" aria-live="polite">
+      <small id="resultLabel">READY TO PLAY?</small>
+      <strong id="resultAmount">행운을 돌려보세요!</strong>
+      <p id="resultMessage">1원 단위의 랜덤 금액이 나와요.</p>
+    </section>
+    <p class="footnote">칸별 버튼은 수동 설정 · 전체 돌리기는 확률 추첨</p>
+  </main>
+  <div id="confetti" aria-hidden="true"></div>
+
+  <script>
+    // 확률은 추첨에만 사용하며 홈페이지에는 표시하지 않습니다.
+    const groups = [
+      { min: 1000, max: 2999, chance: 30 },
+      { min: 3000, max: 4999, chance: 30 },
+      { min: 5000, max: 9999, chance: 20 },
+      { min: 10000, max: 29999, chance: 15 },
+      { min: 30000, max: 49999, chance: 4 },
+      { min: 50000, max: 50000, chance: 1 }
+    ];
+
+    const $ = id => document.getElementById(id);
+    const values = [0, 0, 0, 0, 0];
+    const tracks = [];
+    const stepButtons = [];
+    const busy = [false, false, false, false, false];
+    let drawing = false;
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+    const money = value => `${value.toLocaleString('ko-KR')}원`;
+
+    // 편향 없는 정수 난수. 가능한 경우 브라우저 암호학적 난수를 이용합니다.
+    function randomInt(min, max) {
+      const size = max - min + 1;
+      if (globalThis.crypto && crypto.getRandomValues) {
+        const buffer = new Uint32Array(1);
+        const limit = Math.floor(4294967296 / size) * size;
+        do { crypto.getRandomValues(buffer); } while (buffer[0] >= limit);
+        return min + (buffer[0] % size);
+      }
+      return min + Math.floor(Math.random() * size);
+    }
+
+    function drawPrize() {
+      let chance = randomInt(1, 100);
+      for (const group of groups) {
+        chance -= group.chance;
+        if (chance <= 0) return randomInt(group.min, group.max);
+      }
+      return 1000;
+    }
+
+    function displayDigit(i) {
+      tracks[i].style.transition = 'none';
+      tracks[i].style.transform = 'translateY(0)';
+      tracks[i].innerHTML = `<div class="number">${values[i]}</div>`;
+    }
+
+    async function nextDigit(i, duration = 120) {
+      const next = (values[i] + 1) % 10;
+      const track = tracks[i];
+      track.innerHTML = `<div class="number">${values[i]}</div><div class="number">${next}</div>`;
+      track.style.transition = 'none';
+      track.style.transform = 'translateY(0)';
+      void track.offsetHeight; // 브라우저가 시작 위치를 먼저 적용하도록 함
+      track.style.transition = `transform ${duration}ms ease-in-out`;
+      track.style.transform = 'translateY(-50%)';
+      await sleep(duration + 16);
+      values[i] = next;
+      displayDigit(i);
+    }
+
+    async function stepOne(i) {
+      if (drawing || busy[i]) return;
+      busy[i] = true;
+      stepButtons[i].disabled = true;
+      try {
+        await nextDigit(i, 180);
+        $('result').classList.remove('jackpot');
+        $('resultLabel').textContent = 'MANUAL MODE';
+        $('resultAmount').textContent = money(Number(values.join('')));
+        $('resultMessage').textContent = '직접 설정한 숫자이며 랜덤 당첨 결과는 아니에요.';
+      } finally {
+        busy[i] = false;
+        stepButtons[i].disabled = false;
+      }
+    }
+
+    async function rollReel(i, target) {
+      const minimumSteps = 16 + i * 5;
+      const extra = (target - values[i] - (minimumSteps % 10) + 20) % 10;
+      const total = minimumSteps + extra;
+      for (let step = 0; step < total; step++) {
+        const progress = (step + 1) / total;
+        const duration = 45 + Math.round(115 * progress ** 4);
+        await nextDigit(i, duration);
+      }
+    }
+
+    function celebrate() {
+      const container = $('confetti');
+      container.replaceChildren();
+      const palette = ['#ff8fbd', '#fbd475', '#d9a2ee', '#ffffff'];
+      for (let i = 0; i < 60; i++) {
+        const piece = document.createElement('span');
+        piece.className = 'piece';
+        piece.style.left = randomInt(0, 100) + '%';
+        piece.style.background = palette[i % palette.length];
+        piece.style.animationDelay = Math.random() * .6 + 's';
+        piece.style.setProperty('--drift', randomInt(-110, 110) + 'px');
+        container.append(piece);
+      }
+      setTimeout(() => container.replaceChildren(), 3800);
+    }
+
+    async function spinAll() {
+      if (drawing || busy.some(Boolean)) return;
+      drawing = true;
+      $('spinButton').disabled = true;
+      stepButtons.forEach(button => button.disabled = true);
+      $('cabinet').classList.add('rolling');
+      $('result').classList.remove('jackpot');
+      $('spinButton').textContent = '🎰 돌아가는 중...';
+      $('resultLabel').textContent = 'DRAWING';
+      $('resultAmount').textContent = '두구두구...';
+      $('resultMessage').textContent = '행운의 숫자를 고르는 중이에요!';
+
+      const prize = drawPrize();
+      const target = String(prize).padStart(5, '0').split('').map(Number);
+      try {
+        await Promise.all(target.map((digit, i) => rollReel(i, digit)));
+        $('resultLabel').textContent = prize === 50000 ? '👑 JACKPOT 👑' :
+          prize >= 10000 ? '✦ BIG WIN ✦' : '🎉 CONGRATULATIONS 🎉';
+        $('resultAmount').textContent = money(prize);
+        $('resultMessage').textContent = '당첨을 축하합니다! 💖';
+        if (prize >= 10000) celebrate();
+        if (prize === 50000) $('result').classList.add('jackpot');
+      } finally {
+        drawing = false;
+        $('cabinet').classList.remove('rolling');
+        $('spinButton').disabled = false;
+        stepButtons.forEach(button => button.disabled = false);
+        $('spinButton').textContent = '✨ 다시 돌리기 ✨';
+      }
+    }
+
+    function init() {
+      for (let i = 0; i < 5; i++) {
+        const reel = document.createElement('div');
+        reel.className = 'reel';
+        const track = document.createElement('div');
+        reel.append(track);
+        $('digits').append(reel);
+        tracks.push(track);
+        displayDigit(i);
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'step-btn';
+        button.textContent = '↻';
+        button.setAttribute('aria-label', `${i + 1}번째 숫자를 한 칸 돌리기`);
+        button.addEventListener('click', () => stepOne(i));
+        $('controls').append(button);
+        stepButtons.push(button);
+
+        if (i === 1) {
+          const comma = document.createElement('span');
+          comma.className = 'comma';
+          comma.textContent = ',';
+          $('digits').append(comma);
+          const spacer = document.createElement('span');
+          spacer.className = 'comma-space';
+          $('controls').append(spacer);
+        }
+      }
+      const won = document.createElement('span');
+      won.className = 'won';
+      won.textContent = '원';
+      $('digits').append(won);
+      const spacer = document.createElement('span');
+      spacer.className = 'won-space';
+      $('controls').append(spacer);
+      ['lightsTop', 'lightsBottom'].forEach(id => {
+        for (let i = 0; i < 16; i++) {
+          const light = document.createElement('span');
+          light.className = 'light';
+          $(id).append(light);
+        }
+      });
+      $('spinButton').addEventListener('click', spinAll);
+    }
+    init();
+  </script>
+</body>
+</html>
