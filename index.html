@@ -1,311 +1,848 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#ffedf5" />
-  <title>핑크 잭팟 | 금액 룰렛</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pink Jackpot | 금액 룰렛</title>
+
   <style>
     :root {
-      --rose: #d94f91;
-      --pink: #f486b2;
-      --light: #fff7fb;
-      --ink: #70435b;
-      --gold: #c99b48;
+      --pink: #e76ca3;
+      --deep-pink: #bb4f86;
+      --gold: #d3a45d;
+      --ink: #70455e;
+      --reel-height: 78px;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      margin: 0;
       min-height: 100vh;
+      margin: 0;
+      padding: 32px 15px;
       display: grid;
       place-items: center;
-      padding: 24px 12px;
+      font-family: "Pretendard", "Malgun Gothic", sans-serif;
       color: var(--ink);
-      font-family: "Pretendard", "Malgun Gothic", Arial, sans-serif;
-      background:
-        radial-gradient(circle at 8% 10%, #fff 0, transparent 33%),
-        radial-gradient(circle at 90% 90%, #ffd9e9 0, transparent 35%),
-        #fff0f6;
+      background: linear-gradient(145deg, #fff8fc, #fbd4e7);
     }
-    .app { width: min(100%, 510px); text-align: center; }
-    .eyebrow { letter-spacing: .35em; color: #b8869f; font-size: 12px; font-weight: 800; }
-    h1 { margin: 8px 0; font-size: clamp(31px, 8vw, 49px); letter-spacing: -.06em;
-      color: var(--rose); text-shadow: 0 2px 0 white; }
-    .intro { margin: 0 0 25px; font-size: 14px; color: #a87a92; }
-    .cabinet {
-      padding: 16px;
-      background: linear-gradient(135deg, #ffbcd8, #f58cba 52%, #f7b9d4);
-      border: 4px solid #fff;
-      outline: 2px solid #f8ca73;
-      border-radius: 35px;
-      box-shadow: 0 18px 30px #a54f7940, inset 0 0 0 2px #ffe6a8;
+
+    .page {
+      width: min(100%, 560px);
+      text-align: center;
     }
-    .lights { display: flex; justify-content: space-around; gap: 5px; padding: 2px 4px 14px; }
-    .lights.bottom { padding: 14px 4px 2px; }
-    .light { width: 10px; aspect-ratio: 1; border-radius: 50%; background: #fff9d9;
-      box-shadow: 0 0 8px 2px #fff1a2; }
-    .light:nth-child(3n) { background: #f15caa; box-shadow: 0 0 8px 2px #e66eaa; }
-    .cabinet.rolling .light:nth-child(odd) { animation: twinkle .3s infinite alternate; }
-    .cabinet.rolling .light:nth-child(even) { animation: twinkle .3s .15s infinite alternate; }
-    @keyframes twinkle { to { opacity: .25; } }
-    .window { padding: 20px 10px 15px; border-radius: 25px; background: #fff9fc;
-      border: 2px solid #fff; box-shadow: inset 0 0 0 2px #f8d6e5, inset 0 6px 20px #e6b4c233; }
-    .machine-label { font-weight: 900; letter-spacing: .18em; color: var(--gold);
-      font-size: 13px; margin: 0 0 20px; }
-    .digits, .step-controls { display: flex; align-items: center; justify-content: center; gap: 4px; }
-    .reel { flex: 1; min-width: 0; height: 74px; border: 1px solid #edc9d8; border-radius: 12px;
-      overflow: hidden; background: linear-gradient(#f2dce6, #fff 24%, #fff 74%, #ecd8e2);
-      box-shadow: inset 0 3px 9px #8d5b7333, 0 3px 3px #eed0de; }
-    .number { height: 74px; display: grid; place-items: center;
-      font-size: clamp(32px, 8vw, 47px); line-height: 1; font-weight: 900; color: #6a3b55; }
-    .comma { font-size: 28px; font-weight: 900; align-self: end; color: var(--rose); }
-    .won { font-size: 19px; font-weight: 900; color: #b18a4d; }
-    .step-controls { margin-top: 12px; }
-    .step-btn { flex: 1; min-width: 0; height: 35px; border: 1px solid #f2c9d9; border-radius: 10px;
-      background: #fff; color: var(--rose); font-size: 22px; font-weight: 900; cursor: pointer; }
-    .step-btn:hover:not(:disabled) { background: #ffe8f2; }
-    button:disabled { cursor: not-allowed; opacity: .6; }
-    .comma-space { width: 13px; }
-    .won-space { width: 23px; }
-    .hint { margin: 13px 0 0; font-size: 12px; color: #ad8399; }
-    .spin { width: min(100%, 350px); margin-top: 27px; padding: 17px 16px; border: 2px solid #fff4c7;
-      border-radius: 100px; background: linear-gradient(120deg, #ffb5d1, #e86aa6 58%, #d04b8e);
-      box-shadow: 0 7px 0 #b8588b, 0 12px 22px #c9699b4d;
-      color: #fff; font-size: 19px; font-weight: 900; cursor: pointer; }
-    .spin:hover:not(:disabled) { filter: brightness(1.06); }
-    .spin:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 4px 0 #b8588b; }
-    .result { margin-top: 26px; padding: 22px 15px; border: 2px solid white;
-      border-radius: 23px; background: #ffffffd9; box-shadow: 0 8px 24px #b66e9240; }
-    .result small { font-size: 12px; font-weight: 900; letter-spacing: .16em; color: #b1859e; }
-    .result strong { display: block; margin: 9px 0; font-size: clamp(25px, 8vw, 42px); color: var(--rose); }
-    .result p { margin: 0; color: #a47b90; font-size: 13px; }
-    .result.jackpot { animation: jackpotGlow .55s alternate 5; }
-    .result.jackpot strong { color: #ba8124; }
-    @keyframes jackpotGlow { to { box-shadow: 0 0 38px #ffc461; transform: scale(1.02); } }
-    .footnote { font-size: 11px; margin: 18px 0 0; color: #af8a9c; }
-    #confetti { position: fixed; inset: 0; overflow: hidden; pointer-events: none; }
-    .piece { position: absolute; top: -25px; width: 9px; height: 14px;
-      animation: fall 3s linear forwards; }
-    @keyframes fall { to { transform: translate(var(--drift), 110vh) rotate(800deg); opacity: 0; } }
+
+    .eyebrow {
+      color: #b57b98;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .28em;
+    }
+
+    h1 {
+      margin: 10px 0 6px;
+      font-size: clamp(32px, 8vw, 52px);
+      color: var(--deep-pink);
+      text-shadow: 0 3px 0 white;
+    }
+
+    .subtitle {
+      margin: 0 0 26px;
+      color: #a98297;
+      font-size: 14px;
+    }
+
+    /* 슬롯머신 본체 */
+    .machine {
+      border: 3px solid white;
+      border-radius: 34px;
+      padding: 18px;
+      background: linear-gradient(
+        145deg,
+        #ffe6f0,
+        #f6abc9 70%,
+        #e89abc
+      );
+      box-shadow:
+        0 16px 35px #bb63915c,
+        inset 0 0 0 2px #ebbbd0;
+    }
+
+    /* 금빛 전구 */
+    .lights {
+      display: flex;
+      justify-content: space-around;
+      margin: 3px 4px 16px;
+    }
+
+    .lights:last-child {
+      margin: 16px 4px 3px;
+    }
+
+    .light {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ffe6a6;
+      box-shadow: 0 0 8px #ffcc76;
+    }
+
+    .light:nth-child(3n) {
+      background: white;
+      box-shadow: 0 0 9px white;
+    }
+
+    .machine.is-spinning .light {
+      animation: blink .45s infinite alternate;
+    }
+
+    .machine.is-spinning .light:nth-child(even) {
+      animation-delay: .23s;
+    }
+
+    @keyframes blink {
+      to { opacity: .25; }
+    }
+
+    /* 숫자 표시판 */
+    .panel {
+      padding: 18px 11px 16px;
+      background: #fff7fa;
+      border: 2px solid white;
+      border-radius: 24px;
+    }
+
+    .panel-title {
+      margin: 0 0 15px;
+      color: #c39858;
+      font-weight: 900;
+      letter-spacing: .19em;
+      font-size: 13px;
+    }
+
+    .number-board {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .digit-cell {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .reel-window {
+      height: var(--reel-height);
+      overflow: hidden;
+      border: 1px solid #e8c1d2;
+      border-radius: 12px;
+      background: linear-gradient(
+        #eedde6,
+        white 27%,
+        white 73%,
+        #e9d5e1
+      );
+      box-shadow: inset 0 3px 9px #9a739130;
+    }
+
+    .reel-track {
+      will-change: transform;
+    }
+
+    .digit-face {
+      height: var(--reel-height);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: clamp(31px, 8vw, 49px);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .separator {
+      font-size: 29px;
+      font-weight: 900;
+      color: #bd7ba1;
+    }
+
+    .currency {
+      color: #b68a4e;
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    /* 개별 숫자 시작 / 정지 버튼 */
+    .step-btn {
+      width: 100%;
+      margin-top: 9px;
+      padding: 5px 0;
+      border: 1px solid #efbed2;
+      border-radius: 10px;
+      color: #c46693;
+      background: white;
+      font-size: 22px;
+      cursor: pointer;
+      box-shadow: 0 2px 0 #efc6d9;
+    }
+
+    .step-btn:hover:not(:disabled) {
+      background: #ffe3ef;
+    }
+
+    .step-btn.is-rolling {
+      color: white;
+      border-color: #ba5287;
+      background: linear-gradient(
+        135deg,
+        #ee88b7,
+        #c35a92
+      );
+      box-shadow: 0 0 12px #e76ca380;
+      animation: reelPulse .65s ease-in-out infinite alternate;
+    }
+
+    @keyframes reelPulse {
+      to { filter: brightness(1.12); }
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .55;
+    }
+
+    .note {
+      margin: 13px 0 0;
+      font-size: 12px;
+      color: #a9879b;
+    }
+
+    /* 전체 자동 추첨 버튼 */
+    .spin-btn {
+      width: min(100%, 370px);
+      margin: 26px auto 4px;
+      padding: 18px 16px;
+      border: 2px solid #ffe3ef;
+      border-radius: 999px;
+      color: white;
+      font-size: 20px;
+      font-weight: 900;
+      background: linear-gradient(
+        110deg,
+        #ff9bc7,
+        #e76ca3,
+        #c95991
+      );
+      box-shadow:
+        0 7px 0 #a94e7e,
+        0 12px 23px #c775a05c;
+      cursor: pointer;
+    }
+
+    .spin-btn:active:not(:disabled) {
+      transform: translateY(3px);
+    }
+
+    /* 당첨 결과 */
+    .result {
+      margin-top: 30px;
+      padding: 22px 12px;
+      border-radius: 23px;
+      border: 2px solid white;
+      background: #ffffffde;
+      box-shadow: 0 8px 28px #d68aa84a;
+    }
+
+    .result-label {
+      margin: 0;
+      color: #b890a5;
+      letter-spacing: .19em;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .result-amount {
+      margin: 12px 0;
+      color: var(--deep-pink);
+      font-size: clamp(27px, 8vw, 44px);
+      font-weight: 900;
+    }
+
+    .result-message {
+      margin: 0;
+      color: #9b778f;
+      font-size: 13px;
+    }
+
+    /* 잭팟 효과 */
+    .result.jackpot {
+      animation: glow .55s alternate 7;
+    }
+
+    .result.jackpot .result-amount {
+      color: #c58b27;
+    }
+
+    @keyframes glow {
+      to {
+        box-shadow: 0 0 35px #f6c95e;
+      }
+    }
+
+    /* 축하 폭죽 */
+    #confetti {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .piece {
+      position: absolute;
+      top: -25px;
+      width: 9px;
+      height: 15px;
+      animation: fall 2.7s ease-in forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform:
+          translate(var(--drift), 110vh)
+          rotate(800deg);
+        opacity: 0;
+      }
+    }
+
+    /* 모바일 */
     @media (max-width: 390px) {
-      .cabinet { padding: 10px; } .window { padding: 17px 7px 14px; }
-      .digits, .step-controls { gap: 3px; }
-      .reel, .number { height: 61px; }
-      .comma { font-size: 22px; } .won { font-size: 15px; }
-      .comma-space { width: 9px; } .won-space { width: 16px; }
-      .light { width: 8px; }
+      :root {
+        --reel-height: 61px;
+      }
+
+      .machine {
+        padding: 11px;
+        border-radius: 26px;
+      }
+
+      .panel {
+        padding: 15px 7px;
+      }
+
+      .number-board {
+        gap: 3px;
+      }
+
+      .separator {
+        font-size: 21px;
+      }
+
+      .currency {
+        font-size: 15px;
+      }
+
+      .light {
+        width: 7px;
+        height: 7px;
+      }
     }
   </style>
 </head>
+
 <body>
-  <main class="app">
-    <div class="eyebrow">✦ LUCKY GACHA ✦</div>
-    <h1>PINK JACKPOT</h1>
-    <p class="intro">오늘의 행운은 얼마일까요? 💗</p>
 
-    <section class="cabinet" id="cabinet">
-      <div class="lights" id="lightsTop" aria-hidden="true"></div>
-      <div class="window">
-        <p class="machine-label">✧ DREAMY PRIZE ✧</p>
-        <div class="digits" id="digits" aria-label="현재 금액 숫자"></div>
-        <div class="step-controls" id="controls"></div>
-        <p class="hint">↻ 버튼을 누르면 해당 숫자가 한 칸씩 돌아가요!</p>
+<main class="page">
+
+  <div class="eyebrow">✦ LUCKY GACHA ✦</div>
+
+  <h1>🎰 PINK JACKPOT</h1>
+
+  <p class="subtitle">
+    오늘의 행운은 얼마일까요?
+  </p>
+
+  <section class="machine" id="machine">
+
+    <div class="lights" id="lightsTop"></div>
+
+    <div class="panel">
+
+      <p class="panel-title">
+        ✦ DREAMY PRIZE ✦
+      </p>
+
+      <div
+        class="number-board"
+        id="numberBoard">
       </div>
-      <div class="lights bottom" id="lightsBottom" aria-hidden="true"></div>
-    </section>
 
-    <button class="spin" id="spinButton" type="button">✨ 전체 랜덤 돌리기 ✨</button>
+      <p class="note">
+        ↻ 누르면 계속 회전 · 다시 누르면 멈춰요!
+      </p>
 
-    <section class="result" id="result" aria-live="polite">
-      <small id="resultLabel">READY TO PLAY?</small>
-      <strong id="resultAmount">행운을 돌려보세요!</strong>
-      <p id="resultMessage">1원 단위의 랜덤 금액이 나와요.</p>
-    </section>
-    <p class="footnote">칸별 버튼은 수동 설정 · 전체 돌리기는 확률 추첨</p>
-  </main>
-  <div id="confetti" aria-hidden="true"></div>
+    </div>
 
-  <script>
-    // 확률은 추첨에만 사용하며 홈페이지에는 표시하지 않습니다.
-    const groups = [
-      { min: 1000, max: 2999, chance: 30 },
-      { min: 3000, max: 4999, chance: 30 },
-      { min: 5000, max: 9999, chance: 20 },
-      { min: 10000, max: 29999, chance: 15 },
-      { min: 30000, max: 49999, chance: 4 },
-      { min: 50000, max: 50000, chance: 1 }
+    <div class="lights" id="lightsBottom"></div>
+
+  </section>
+
+  <button
+    type="button"
+    class="spin-btn"
+    id="spinBtn">
+    ✨ 전체 랜덤 돌리기 ✨
+  </button>
+
+  <section
+    class="result"
+    id="result"
+    aria-live="polite">
+
+    <p class="result-label" id="resultLabel">
+      READY TO PLAY?
+    </p>
+
+    <p class="result-amount" id="resultAmount">
+      행운을 돌려보세요!
+    </p>
+
+    <p class="result-message" id="resultMessage">
+      1원 단위로 금액이 추첨됩니다.
+    </p>
+
+  </section>
+
+  <p class="note">
+    직접 멈춘 숫자는 수동 결과이며,
+    전체 랜덤 추첨에만 확률이 적용됩니다.
+  </p>
+
+</main>
+
+<div id="confetti"></div>
+
+<script>
+
+  /* 금액 구간별 확률 */
+  const prizeRanges = [
+    { min: 1000,  max: 2999,  weight: 30 },
+    { min: 3000,  max: 4999,  weight: 30 },
+    { min: 5000,  max: 9999,  weight: 20 },
+    { min: 10000, max: 29999, weight: 15 },
+    { min: 30000, max: 49999, weight: 4 },
+    { min: 50000, max: 50000, weight: 1 }
+  ];
+
+  const $ = id => document.getElementById(id);
+
+  const values = [0, 1, 0, 0, 0];
+
+  const tracks = [];
+  const buttons = [];
+
+  const manuallySpinning = [
+    false, false, false, false, false
+  ];
+
+  const stopRequested = [
+    false, false, false, false, false
+  ];
+
+  let spinning = false;
+
+  const wait = ms =>
+    new Promise(resolve => setTimeout(resolve, ms));
+
+  const money = amount =>
+    amount.toLocaleString("ko-KR") + "원";
+
+
+  /* 랜덤 숫자 생성 */
+  function randomInt(min, max) {
+    const size = max - min + 1;
+
+    if (window.crypto?.getRandomValues) {
+      const sample = new Uint32Array(1);
+      const limit =
+        Math.floor(4294967296 / size) * size;
+
+      do {
+        window.crypto.getRandomValues(sample);
+      } while (sample[0] >= limit);
+
+      return min + (sample[0] % size);
+    }
+
+    return min + Math.floor(Math.random() * size);
+  }
+
+
+  /* 전체 금액 추첨 */
+  function drawPrize() {
+    let ticket = randomInt(1, 100);
+
+    for (const range of prizeRanges) {
+      ticket -= range.weight;
+
+      if (ticket <= 0) {
+        return randomInt(range.min, range.max);
+      }
+    }
+
+    return 1000;
+  }
+
+
+  /* 숫자 표시 */
+  function drawDigit(i) {
+    tracks[i].innerHTML =
+      `<div class="digit-face">${values[i]}</div>`;
+
+    tracks[i].style.transition = "none";
+    tracks[i].style.transform = "translateY(0)";
+  }
+
+
+  /* 슬롯머신 생성 */
+  function buildMachine() {
+
+    ["lightsTop", "lightsBottom"].forEach(id => {
+      $(id).innerHTML =
+        '<span class="light"></span>'.repeat(17);
+    });
+
+    for (let i = 0; i < 5; i++) {
+
+      const cell = document.createElement("div");
+      cell.className = "digit-cell";
+
+      const windowEl = document.createElement("div");
+      windowEl.className = "reel-window";
+
+      const track = document.createElement("div");
+      track.className = "reel-track";
+
+      windowEl.append(track);
+
+      const btn = document.createElement("button");
+
+      btn.type = "button";
+      btn.className = "step-btn";
+      btn.textContent = "↻";
+
+      btn.setAttribute("aria-pressed", "false");
+
+      btn.addEventListener("click", () => {
+        toggleManualReel(i);
+      });
+
+      cell.append(windowEl, btn);
+
+      $("numberBoard").append(cell);
+
+      tracks.push(track);
+      buttons.push(btn);
+
+      drawDigit(i);
+
+      if (i === 1) {
+        const comma = document.createElement("span");
+
+        comma.className = "separator";
+        comma.textContent = ",";
+
+        $("numberBoard").append(comma);
+      }
+    }
+
+    const won = document.createElement("span");
+
+    won.className = "currency";
+    won.textContent = "원";
+
+    $("numberBoard").append(won);
+  }
+
+
+  /* 숫자를 한 단계 이동시키는 애니메이션 */
+  async function advanceOne(i, duration = 120) {
+
+    const next = (values[i] + 1) % 10;
+    const track = tracks[i];
+
+    track.innerHTML =
+      `<div class="digit-face">${values[i]}</div>` +
+      `<div class="digit-face">${next}</div>`;
+
+    track.style.transition = "none";
+    track.style.transform = "translateY(0)";
+
+    void track.offsetHeight;
+
+    track.style.transition =
+      `transform ${duration}ms ease-in-out`;
+
+    track.style.transform =
+      "translateY(calc(-1 * var(--reel-height)))";
+
+    await wait(duration + 18);
+
+    values[i] = next;
+
+    drawDigit(i);
+  }
+
+
+  /*
+   * 개별 숫자 시작 / 정지
+   *
+   * 첫 클릭: 계속 회전
+   * 두 번째 클릭: 그 시점에 정지 요청
+   */
+  async function toggleManualReel(i) {
+
+    if (spinning) return;
+
+    /* 이미 돌아가고 있다면 멈추기 */
+    if (manuallySpinning[i]) {
+      stopRequested[i] = true;
+      return;
+    }
+
+    manuallySpinning[i] = true;
+    stopRequested[i] = false;
+
+    buttons[i].textContent = "■";
+    buttons[i].classList.add("is-rolling");
+
+    buttons[i].setAttribute(
+      "aria-pressed", "true"
+    );
+
+    $("spinBtn").disabled = true;
+
+    $("machine").classList.add("is-spinning");
+
+    $("result").classList.remove("jackpot");
+
+    $("resultLabel").textContent = "MANUAL MODE";
+
+    $("resultAmount").textContent = "돌아가는 중...";
+
+    $("resultMessage").textContent =
+      "원하는 순간에 ■ 버튼을 눌러 멈춰주세요!";
+
+    try {
+
+      /* 정지 버튼을 누를 때까지 계속 회전 */
+      while (!stopRequested[i]) {
+        await advanceOne(i, 74);
+      }
+
+    } finally {
+
+      manuallySpinning[i] = false;
+      stopRequested[i] = false;
+
+      buttons[i].textContent = "↻";
+
+      buttons[i].classList.remove("is-rolling");
+
+      buttons[i].setAttribute(
+        "aria-pressed", "false"
+      );
+
+      /* 모든 칸이 멈춘 경우 */
+      if (!manuallySpinning.some(Boolean)) {
+
+        $("spinBtn").disabled = false;
+
+        $("machine").classList.remove("is-spinning");
+
+        const amount = Number(values.join(""));
+
+        $("resultLabel").textContent =
+          "직접 멈춘 결과";
+
+        $("resultAmount").textContent =
+          money(amount);
+
+        $("resultMessage").textContent =
+          amount >= 1000 && amount <= 50000
+            ? "직접 멈춘 숫자의 조합입니다."
+            : "1,000~50,000원 범위를 벗어났어요.";
+      }
+    }
+  }
+
+
+  /* 전체 자동 추첨 시 숫자 회전 */
+  async function spinDigit(i, target) {
+
+    await wait(i * 150);
+
+    const turns = 15 + i * 4;
+
+    const extra =
+      (target - values[i] - turns % 10 + 10) % 10;
+
+    const total = turns + extra;
+
+    for (let step = 0; step < total; step++) {
+
+      const slowdown = (step / total) ** 4;
+
+      await advanceOne(
+        i,
+        Math.round(45 + slowdown * 145)
+      );
+    }
+  }
+
+
+  /* 폭죽 효과 */
+  function celebrate() {
+
+    const layer = $("confetti");
+
+    layer.replaceChildren();
+
+    const colors = [
+      "#e76ca3",
+      "#f8c75d",
+      "#ad7dd0",
+      "#fff0b9"
     ];
 
-    const $ = id => document.getElementById(id);
-    const values = [0, 0, 0, 0, 0];
-    const tracks = [];
-    const stepButtons = [];
-    const busy = [false, false, false, false, false];
-    let drawing = false;
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-    const money = value => `${value.toLocaleString('ko-KR')}원`;
+    for (let i = 0; i < 60; i++) {
 
-    // 편향 없는 정수 난수. 가능한 경우 브라우저 암호학적 난수를 이용합니다.
-    function randomInt(min, max) {
-      const size = max - min + 1;
-      if (globalThis.crypto && crypto.getRandomValues) {
-        const buffer = new Uint32Array(1);
-        const limit = Math.floor(4294967296 / size) * size;
-        do { crypto.getRandomValues(buffer); } while (buffer[0] >= limit);
-        return min + (buffer[0] % size);
-      }
-      return min + Math.floor(Math.random() * size);
+      const piece = document.createElement("span");
+
+      piece.className = "piece";
+
+      piece.style.left =
+        randomInt(0, 100) + "%";
+
+      piece.style.background =
+        colors[i % colors.length];
+
+      piece.style.animationDelay =
+        (Math.random() * .6) + "s";
+
+      piece.style.setProperty(
+        "--drift",
+        randomInt(-140, 140) + "px"
+      );
+
+      layer.append(piece);
     }
 
-    function drawPrize() {
-      let chance = randomInt(1, 100);
-      for (const group of groups) {
-        chance -= group.chance;
-        if (chance <= 0) return randomInt(group.min, group.max);
-      }
-      return 1000;
-    }
+    setTimeout(() => {
+      layer.replaceChildren();
+    }, 3500);
+  }
 
-    function displayDigit(i) {
-      tracks[i].style.transition = 'none';
-      tracks[i].style.transform = 'translateY(0)';
-      tracks[i].innerHTML = `<div class="number">${values[i]}</div>`;
-    }
 
-    async function nextDigit(i, duration = 120) {
-      const next = (values[i] + 1) % 10;
-      const track = tracks[i];
-      track.innerHTML = `<div class="number">${values[i]}</div><div class="number">${next}</div>`;
-      track.style.transition = 'none';
-      track.style.transform = 'translateY(0)';
-      void track.offsetHeight; // 브라우저가 시작 위치를 먼저 적용하도록 함
-      track.style.transition = `transform ${duration}ms ease-in-out`;
-      track.style.transform = 'translateY(-50%)';
-      await sleep(duration + 16);
-      values[i] = next;
-      displayDigit(i);
-    }
+  /* 전체 랜덤 돌리기 */
+  async function spinAll() {
 
-    async function stepOne(i) {
-      if (drawing || busy[i]) return;
-      busy[i] = true;
-      stepButtons[i].disabled = true;
-      try {
-        await nextDigit(i, 180);
-        $('result').classList.remove('jackpot');
-        $('resultLabel').textContent = 'MANUAL MODE';
-        $('resultAmount').textContent = money(Number(values.join('')));
-        $('resultMessage').textContent = '직접 설정한 숫자이며 랜덤 당첨 결과는 아니에요.';
-      } finally {
-        busy[i] = false;
-        stepButtons[i].disabled = false;
-      }
-    }
+    if (
+      spinning ||
+      manuallySpinning.some(Boolean)
+    ) return;
 
-    async function rollReel(i, target) {
-      const minimumSteps = 16 + i * 5;
-      const extra = (target - values[i] - (minimumSteps % 10) + 20) % 10;
-      const total = minimumSteps + extra;
-      for (let step = 0; step < total; step++) {
-        const progress = (step + 1) / total;
-        const duration = 45 + Math.round(115 * progress ** 4);
-        await nextDigit(i, duration);
-      }
-    }
+    spinning = true;
 
-    function celebrate() {
-      const container = $('confetti');
-      container.replaceChildren();
-      const palette = ['#ff8fbd', '#fbd475', '#d9a2ee', '#ffffff'];
-      for (let i = 0; i < 60; i++) {
-        const piece = document.createElement('span');
-        piece.className = 'piece';
-        piece.style.left = randomInt(0, 100) + '%';
-        piece.style.background = palette[i % palette.length];
-        piece.style.animationDelay = Math.random() * .6 + 's';
-        piece.style.setProperty('--drift', randomInt(-110, 110) + 'px');
-        container.append(piece);
-      }
-      setTimeout(() => container.replaceChildren(), 3800);
-    }
+    $("machine").classList.add("is-spinning");
 
-    async function spinAll() {
-      if (drawing || busy.some(Boolean)) return;
-      drawing = true;
-      $('spinButton').disabled = true;
-      stepButtons.forEach(button => button.disabled = true);
-      $('cabinet').classList.add('rolling');
-      $('result').classList.remove('jackpot');
-      $('spinButton').textContent = '🎰 돌아가는 중...';
-      $('resultLabel').textContent = 'DRAWING';
-      $('resultAmount').textContent = '두구두구...';
-      $('resultMessage').textContent = '행운의 숫자를 고르는 중이에요!';
+    $("spinBtn").disabled = true;
+
+    buttons.forEach(btn => {
+      btn.disabled = true;
+    });
+
+    $("spinBtn").textContent =
+      "🎰 돌아가는 중...";
+
+    $("result").classList.remove("jackpot");
+
+    $("resultLabel").textContent = "DRAWING";
+
+    $("resultAmount").textContent = "두구두구...";
+
+    $("resultMessage").textContent =
+      "숫자가 차례로 멈춥니다!";
+
+    try {
 
       const prize = drawPrize();
-      const target = String(prize).padStart(5, '0').split('').map(Number);
-      try {
-        await Promise.all(target.map((digit, i) => rollReel(i, digit)));
-        $('resultLabel').textContent = prize === 50000 ? '👑 JACKPOT 👑' :
-          prize >= 10000 ? '✦ BIG WIN ✦' : '🎉 CONGRATULATIONS 🎉';
-        $('resultAmount').textContent = money(prize);
-        $('resultMessage').textContent = '당첨을 축하합니다! 💖';
-        if (prize >= 10000) celebrate();
-        if (prize === 50000) $('result').classList.add('jackpot');
-      } finally {
-        drawing = false;
-        $('cabinet').classList.remove('rolling');
-        $('spinButton').disabled = false;
-        stepButtons.forEach(button => button.disabled = false);
-        $('spinButton').textContent = '✨ 다시 돌리기 ✨';
+
+      const target = String(prize)
+        .padStart(5, "0")
+        .split("")
+        .map(Number);
+
+      await Promise.all(
+        target.map((digit, i) => spinDigit(i, digit))
+      );
+
+      if (prize === 50000) {
+
+        $("resultLabel").textContent =
+          "👑 JACKPOT 👑";
+
+        $("result").classList.add("jackpot");
+
+      } else if (prize >= 10000) {
+
+        $("resultLabel").textContent =
+          "✦ BIG WIN ✦";
+
+      } else {
+
+        $("resultLabel").textContent =
+          "🎉 CONGRATULATIONS 🎉";
       }
-    }
 
-    function init() {
-      for (let i = 0; i < 5; i++) {
-        const reel = document.createElement('div');
-        reel.className = 'reel';
-        const track = document.createElement('div');
-        reel.append(track);
-        $('digits').append(reel);
-        tracks.push(track);
-        displayDigit(i);
+      $("resultAmount").textContent =
+        money(prize);
 
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'step-btn';
-        button.textContent = '↻';
-        button.setAttribute('aria-label', `${i + 1}번째 숫자를 한 칸 돌리기`);
-        button.addEventListener('click', () => stepOne(i));
-        $('controls').append(button);
-        stepButtons.push(button);
+      $("resultMessage").textContent =
+        "당첨을 축하합니다! 💗";
 
-        if (i === 1) {
-          const comma = document.createElement('span');
-          comma.className = 'comma';
-          comma.textContent = ',';
-          $('digits').append(comma);
-          const spacer = document.createElement('span');
-          spacer.className = 'comma-space';
-          $('controls').append(spacer);
-        }
+      if (prize >= 10000) {
+        celebrate();
       }
-      const won = document.createElement('span');
-      won.className = 'won';
-      won.textContent = '원';
-      $('digits').append(won);
-      const spacer = document.createElement('span');
-      spacer.className = 'won-space';
-      $('controls').append(spacer);
-      ['lightsTop', 'lightsBottom'].forEach(id => {
-        for (let i = 0; i < 16; i++) {
-          const light = document.createElement('span');
-          light.className = 'light';
-          $(id).append(light);
-        }
+
+    } finally {
+
+      spinning = false;
+
+      $("machine").classList.remove("is-spinning");
+
+      $("spinBtn").disabled = false;
+
+      buttons.forEach(btn => {
+        btn.disabled = false;
       });
-      $('spinButton').addEventListener('click', spinAll);
+
+      $("spinBtn").textContent =
+        "✨ 다시 돌리기 ✨";
     }
-    init();
-  </script>
+  }
+
+
+  /* 초기 실행 */
+  buildMachine();
+
+  $("spinBtn").addEventListener(
+    "click",
+    spinAll
+  );
+
+</script>
+
 </body>
 </html>
